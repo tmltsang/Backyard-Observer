@@ -13,6 +13,13 @@ class Vision:
         # https://docs.opencv.org/4.2.0/d4/da8/group__imgcodecs.html
         self.needle_img = cv.imread(needle_img_path, cv.IMREAD_UNCHANGED)
 
+        scale_percent = 25 # percent of original size
+        width = int(self.needle_img.shape[1] * scale_percent / 100)
+        height = int(self.needle_img.shape[0] * scale_percent / 100)
+        dim = (width, height)
+  
+        # resize image
+        self.needle_img = cv.resize(self.needle_img, dim, interpolation = cv.INTER_AREA)
         # Save the dimensions of the needle image
         self.needle_w = self.needle_img.shape[1]
         self.needle_h = self.needle_img.shape[0]
@@ -35,13 +42,11 @@ class Vision:
         #Get the best match position
         min_val, max_val, min_loc, max_loc = cv.minMaxLoc(result)
 
-        print('Best match top left position: %s' % str(max_loc))
-        print('Best match confidence: %s' % max_val)
-
-        threshold = 0.8
-        if max_val >= threshold:
+        threshold = 0.85
+        if max_val >= threshold and max_val != np.inf:
             print('Found needle.')
-
+            print('Best match top left position: %s' % str(max_loc))
+            print('Best match confidence: %s' % max_val)
             needle_w = self.needle_img.shape[1]
             needle_h = self.needle_img.shape[0]
             result_rect.append([int(max_loc[0]), int(max_loc[1]), needle_w, needle_h])
