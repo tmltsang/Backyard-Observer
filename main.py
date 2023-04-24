@@ -5,7 +5,8 @@ from time import time
 
 def main():
     capture = cv.VideoCapture('testament_vs_hc.mp4')
-    vision_fs = Vision('img/testament/GGST_Testament_fS.png')
+    vision_fs = Vision('img/testament/GGST_Testament_fS_copy.png', threshold=0.85)
+    vision_fs_flipped = Vision('img/testament/GGST_Testament_fS_copy.png', threshold=0.85, flipped=True)
     #haystack_img = cv.imread('img/testament/GGST_Testament_ingame_fS.jpg', cv.IMREAD_UNCHANGED)
     # needle_img = cv.imread('GGST_Testament_fS_crop.jpg', cv.IMREAD_UNCHANGED)
     #needle_img = cv.imread('GGST_Testament_fS.png', cv.IMREAD_UNCHANGED)
@@ -16,6 +17,7 @@ def main():
         ret, frame = capture.read()
         if ret == True:
             rects = vision_fs.find(frame)
+            rects += vision_fs_flipped.find(frame)
             output_img = vision_fs.draw_rectangles(frame, rects)
             cv.imshow('Matches', output_img)
             #print('FPS {}'.format(1 / (time() - loop_time)))
