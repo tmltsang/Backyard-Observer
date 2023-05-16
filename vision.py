@@ -10,12 +10,11 @@ class Vision:
     method = None
     threshold = 0.80
 
-    def __init__(self, needle_img_path, threshold=0.80, method=cv.TM_CCORR_NORMED, flipped=False):
+    def __init__(self, needle_img_path, threshold=0.80, scale_percent=25, method=cv.TM_CCORR_NORMED, flipped=False):
         # load the image we're trying to match
         # https://docs.opencv.org/4.2.0/d4/da8/group__imgcodecs.html
         self.needle_img = cv.imread(needle_img_path, cv.IMREAD_UNCHANGED)
 
-        scale_percent = 25 # percent of original size
         width = int(self.needle_img.shape[1] * scale_percent / 100)
         height = int(self.needle_img.shape[0] * scale_percent / 100)
         dim = (width, height)
