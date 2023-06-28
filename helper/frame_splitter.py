@@ -17,6 +17,8 @@ parser.add_argument('--output_path', default='training/images', nargs='?', help=
 #Argument that allows an alternate mode, to verify the images with a currently trained model
 parser.add_argument('--use_model', nargs='?', help='Path to model to be used')
 parser.add_argument('--output_path_labels', default='training/images', nargs='?', help='path to store labels after split (only works with --use_model)')
+parser.add_argument('--full_split', action=argparse.BooleanOptionalAction)
+
 args = parser.parse_args()
 
 #Look for frames with testament's portrait as that will be part of a match
@@ -35,7 +37,7 @@ for path in args.path:
         success, frame = capture.read()
         if success:
             #rects = testament_portrait.find(frame)    
-            if random.randrange(0,100) < 1:
+            if random.randrange(0,100) < 1 or args.full_split:
                 if use_model:
                     results = model(frame)
                     results[0] = results[0].cuda()
