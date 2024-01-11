@@ -28,12 +28,16 @@ for file in os.listdir(path):
         #for line in fileinput.input(f, inpace=True):
         print(f)
         with open(f,'r') as file:
+            update_file = ''
             for line in file:
                 line_split = line.split(' ')
                 if int(line_split[0]) > index_to_remove:
                     line_split[0] = str(int(line_split[0]) - 1)
-                    print(' '.join(line_split))
+                    update_file += ' '.join(line_split)
+            print(update_file)
+        with open(f, 'w') as file:
+            file.write(update_file)
 
 #finally remove class from classes.txt
-#with open(args.class_path, 'w') as class_f:
-#    f.write("\n".join(classes))
+with open(args.class_path, 'w') as class_f:
+   class_f.write("\n".join(classes))

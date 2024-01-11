@@ -15,7 +15,7 @@ def read_health_bars(img):
     cv2.imshow("health", p1_health_bar)
     cv2.imshow("health_2", p2_health_bar)
     hsv = cv2.cvtColor(p2_health_bar, cv2.COLOR_BGR2HSV)
-    healthbar_mask = cv2.inRange(hsv, np.array([0,52,190]), np.array([179,255,255]))
+    healthbar_mask = cv2.inRange(hsv, np.array([0,35,210]), np.array([179,255,255]))
     healthbar = cv2.bitwise_and(p2_health_bar,p2_health_bar, mask=healthbar_mask)
     healthbar = cv2.cvtColor(healthbar, cv2.COLOR_BGR2GRAY)
     #blur = cv2.GaussianBlur(healthbar,(5,5),0)
@@ -24,12 +24,15 @@ def read_health_bars(img):
     result = cv2.dilate(health_bar_thresh, kernel)
     cv2.imshow("test", result)
     contours, _ = cv2.findContours(result, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    minX = 500
+    maxX = 0
+    healthBar_contour = None
     for contour in contours:
         x,y,w,h = cv2.boundingRect(contour)
-        if (x < minX):
-            minX = x
-    print("Health %: %f", (480-x)/480)
-    cv2.drawContours(p2_health_bar, contours, -1, (0, 255, 0), 3)
+        if x + w > 470:
+            healthBar_contour = contour
+            if (x > maxX):
+                maxX = x
+    print("Health %: %f", (480-maxX)/480)
+    cv2.drawContours(p2_health_bar, [healthBar_contour], -1, (0, 255, 0), 3)
     cv2.imshow('Contours', p2_health_bar)
     cv2.waitKey(0)
