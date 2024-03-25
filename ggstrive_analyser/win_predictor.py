@@ -56,10 +56,17 @@ class WinPredictor:
         #predicted = model.predict(set_x_test.iloc[[100]])
 
     def predict_win_round(self, current_state: GameState):
-        feature_x = []
-        for feature in self.cfg['pred_round_features']:
-            feature_x.append(current_state.flatten()[feature])
-        return self.round_model.predict([feature_x])
+        df= pd.DataFrame([current_state.flatten()])
+        round_feature_cols = self.cfg['pred_round_features']
+        current_x = df.loc[:, round_feature_cols]
+        #print(current_x)
+        #print(self.round_model.predict_proba(current_x))
+        return self.round_model.predict_proba(current_x)
     
     def predict_win_set(self, current_state: GameState):
-        return self.set_model.predict([pd.array(list(current_state.flatten().values()))])
+        df= pd.DataFrame([current_state.flatten()])
+        set_feature_cols = self.cfg['pred_set_features']
+        current_x = df.loc[:, set_feature_cols]
+        # print(current_x)
+        # print(self.set_model.predict_proba(current_x))
+        return self.set_model.predict_proba(current_x)
