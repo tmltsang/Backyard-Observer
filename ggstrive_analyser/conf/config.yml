@@ -1,0 +1,10 @@
+---
+record: True
+num_frames: 2
+video_path: training/videos
+csv_path: csv
+csv_fields:  ['frame', 'p1_health', 'p2_health', 'p1_tension', 'p2_tension', 'p1_burst', 'p2_burst', 'p1_risc', 'p2_risc', 'p1_round_count', 'p2_round_count','p1_round_win', 'p1_set_win']
+pred_round_features: ['frame', 'p1_health', 'p2_health', 'p1_tension', 'p2_tension', 'p1_burst', 'p2_burst', 'p1_risc', 'p2_risc']
+prod_round_win_field: "p1_round_win"
+pred_set_features: ['frame', 'p1_health', 'p2_health', 'p1_tension', 'p2_tension', 'p1_burst', 'p2_burst', 'p1_risc', 'p2_risc', 'p1_round_count', 'p2_round_count']
+prod_set_win_field: "p1_set_win"

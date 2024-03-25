@@ -1,3 +1,14 @@
+# def make_edge(x, y, text, width):
+#     return go.Scatter(x = x,
+#                       y = y,
+#                       line = dict(width = width, color = 'cornflowerblue'),
+#                       hoverinfo = 'text',
+#                       text = ([text]),
+#                       mode = 'lines')
+#    testament_last_move = None
+    # testament_move_count = defaultdict(int)
+    # testament_move_matrix = defaultdict(lambda: defaultdict(int))
+    # testament_cls = None
             # if testament_cls == None:
             #     testament_cls = results[0].names
             # resultsCpu = results[0].cpu()
