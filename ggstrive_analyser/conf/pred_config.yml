@@ -1,10 +1,29 @@
 ---
 record: False
 num_frames: 2
-video_path: training/videos
+video_path: training/videos/extra
 csv_path: csv
-csv_fields:  ['frame', 'p1_health', 'p2_health', 'p1_tension', 'p2_tension', 'p1_burst', 'p2_burst', 'p1_risc', 'p2_risc', 'p1_round_count', 'p2_round_count','p1_round_win', 'p1_set_win']
-pred_round_features: ['frame', 'p1_health', 'p2_health', 'p1_tension', 'p2_tension', 'p1_burst', 'p2_burst', 'p1_risc', 'p2_risc']
+pred_round_features: ['time',
+              'p1_health', 'p2_health',
+              'p1_tension', 'p2_tension',
+              'p1_burst', 'p2_burst',
+              'p1_risc', 'p2_risc',
+              'p1_counter', 'p2_counter',
+              'p1_just', 'p2_just',
+              'p1_punish', 'p2_punish',
+              'p1_reversal', 'p2_reversal',
+              'p1_curr_damaged', 'p2_curr_damaged',
+              'p1_round_win', 'p1_set_win']
 prod_round_win_field: "p1_round_win"
-pred_set_features: ['frame', 'p1_health', 'p2_health', 'p1_tension', 'p2_tension', 'p1_burst', 'p2_burst', 'p1_risc', 'p2_risc', 'p1_round_count', 'p2_round_count']
+pred_set_features: ['time',
+              'p1_health', 'p2_health',
+              'p1_tension', 'p2_tension',
+              'p1_burst', 'p2_burst',
+              'p1_risc', 'p2_risc',
+              'p1_round_count', 'p2_round_count',
+              'p1_counter', 'p2_counter',
+              'p1_just', 'p2_just',
+              'p1_punish', 'p2_punish',
+              'p1_reversal', 'p2_reversal',
+              'p1_curr_damaged', 'p2_curr_damaged']
 prod_set_win_field: "p1_set_win"

@@ -25,4 +25,4 @@ class Singleton:
 @Singleton
 class BarVisionModel:
    def __init__(self):
-      self.model = YOLO('runs/detect/bar_batch_x_768_imgsz/weights/best.pt')
+      self.model = YOLO('runs/detect/bar_batch_updated_combo3/weights/best.pt')
