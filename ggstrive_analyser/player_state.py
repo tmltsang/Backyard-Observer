@@ -12,6 +12,7 @@ class PlayerState:
     just: int = field(default = 0)
     punish: int = field(default = 0)
     curr_damaged: bool = field(default = False)
+    name: str = field(default="")
 
     def __post_init__(self):
         self.health = round(self.health, 5)

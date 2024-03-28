@@ -1,13 +1,14 @@
 ---
 record: True
-num_frames: 2
-video_path: training/videos
-csv_path: csv/test
-csv_fields:  ['time', 
-              'p1_health', 'p2_health', 
-              'p1_tension', 'p2_tension', 
-              'p1_burst', 'p2_burst', 
-              'p1_risc', 'p2_risc', 
+num_frames: 4
+video_path: training/videos/gg_matches
+csv_path: csv/gg_matches
+csv_fields:  ['time',
+              'p1_name', 'p2_name',
+              'p1_health', 'p2_health',
+              'p1_tension', 'p2_tension',
+              'p1_burst', 'p2_burst',
+              'p1_risc', 'p2_risc',
               'p1_round_count', 'p2_round_count',
               'p1_counter', 'p2_counter',
               'p1_just', 'p2_just',

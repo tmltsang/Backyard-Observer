@@ -21,28 +21,21 @@ class DataRecorder(ABC):
     # def previous_state(self):
     #     return self._previous_state
 
-    def prev_round_winner(self, current_state: GameState):
-        if self.previous_state:
-            if current_state.p1.round_count > self.previous_state.p1.round_count:
-                return WinState.P1_WIN
-            elif current_state.p2.round_count > self.previous_state.p2.round_count:
-                return WinState.P2_WIN
-        return WinState.NO_WIN
+    # def prev_round_winner(self, current_state: GameState):
+    #     if self.previous_state:
+    #         if current_state.p1.round_count > self.previous_state.p1.round_count:
+    #             return WinState.P1_WIN
+    #         elif current_state.p2.round_count > self.previous_state.p2.round_count:
+    #             return WinState.P2_WIN
+    #     return WinState.NO_WIN
     
     def prev_set_winner(self, current_state: GameState):
-        if self.previous_state:
-            if (current_state.p1.round_count + current_state.p2.round_count == 0) and\
-                not (self.previous_state.p1.round_count + self.previous_state.p2.round_count == 0):
-                # print("current p1 round count %d" % (current_state["p1"].round_count))
-                # print("current p2 round count %d" % (current_state["p2"].round_count))
-
-                # print("previous p1 round count %d" % (self.previous_state["p1"].round_count))
-                # print("previous p2 round count %d" % (self.previous_stat e["p2"].round_count))
-
-                if self.previous_state.p1.health < self.previous_state.p2.health:
-                    return WinState.P2_WIN
-                else:
-                    return WinState.P1_WIN
+        if current_state.win_state != WinState.NO_WIN:
+            # Set is won if current win_state and round_count == 1 
+            if current_state.win_state == WinState.P1_WIN and current_state.p1.round_count == 1:
+                return WinState.P1_WIN
+            elif current_state.win_state == WinState.P2_WIN and current_state.p2.round_count == 1:
+                return WinState.P2_WIN
         return WinState.NO_WIN
 
 class CSVDataRecorder(DataRecorder):
@@ -90,14 +83,11 @@ class CSVDataRecorder(DataRecorder):
         # print (self.previous_state)
         self.current_round_history.append(current_state.flatten())
 
-        round_win_state = self.prev_round_winner(current_state)
-
-        if round_win_state != WinState.NO_WIN:
-            self.__record_round_win(round_win_state == WinState.P1_WIN)
+        if current_state.win_state != WinState.NO_WIN:
+            self.__record_round_win(current_state.win_state == WinState.P1_WIN)
             self.current_set_history += self.current_round_history
             self.current_round_history = []
-            print("P1 wins round %r" % (round_win_state))
-
+            print("P1 wins round %r" % (current_state.win_state))
 
         set_win_state = self.prev_set_winner(current_state)
         
@@ -107,7 +97,7 @@ class CSVDataRecorder(DataRecorder):
 
         self.previous_state = current_state
     
-    #Due to implementation, sets are only recorded once the next one starts. So we'll need to manually record the last set
+    #Flushes the set_history in case it was never written
     def final_write(self):
         print("writing last set")
         set_win_state = WinState.P1_WIN
