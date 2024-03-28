@@ -162,13 +162,13 @@ class BarCollector:
         # for ui_text, is_on_screen in self.ui_on_screen.keys():
         #     for ui in found_cls[ui_text]:
         #         if self.__is_p1_side(ui):
-        current_state = GameState((self.cfg["num_frames"] * self.frame_count)/self.frame_rate, p1, p2)
+        current_state = GameState((self.cfg["num_frames"] * self.frame_count)/self.frame_rate, self.round_end, p1, p2)
         #self.previous = current_state
         return current_state
 
     def read_frame(self, frame) -> GameState:
         self.frame_count += 1
-        results = BarVisionModel.Instance().model.predict(frame, conf=0.8, imgsz=(640, 768), verbose=False)
+        results = BarVisionModel.Instance().model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
         resultsCpu = results[0].cpu()
         annotated_frame = results[0].plot()
         if self.bar_cls_dict == None:
@@ -180,7 +180,7 @@ class BarCollector:
             self.new_round = True
             self.round_end = False
             self.between_round = False
-        elif "slash" in found_cls.keys() or "perfect" in found_cls.keys():
+        elif "slash" in found_cls.keys() or "perfect" in found_cls.keys() and not self.between_round:
             self.round_end = True
         else:
             p1_curr_round_count = self.previous.p1.round_count
@@ -232,9 +232,12 @@ class BarCollector:
                 self.previous = current_state
                 return current_state
         if self.round_end and len(found_cls["healthbar"]) == 1:
+            self.round_end = False
+            self.between_round = True
             #Should only be a single healthbar left
             if self.__get_last_p1_health() != 0 and self.__get_last_p2_health() != 0:
                 last_of_round = self.previous
+                last_of_round.round_end = True
                 if self.__is_p1_side(found_cls["healthbar"][0]):
                     last_of_round.p2.health = 0
                     print(f'P1 Wins Round with final Health: %f' % self.__get_last_p1_health())
@@ -243,6 +246,5 @@ class BarCollector:
                     last_of_round.p1.health = 0
                     print(f'P2 Wins Round with final Health: %f' % self.__get_last_p2_health())
                     return last_of_round
-            self.round_end = False
-            self.between_rounds = True
+
         return None

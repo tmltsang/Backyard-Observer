@@ -1,13 +1,8 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 import os
 import csv
+from win_state import WinState
 from game_state import GameState
-
-class WinState(Enum):
-    P1_WIN = 1
-    P2_WIN = 2
-    NO_WIN = 3
 
 class DataRecorder(ABC):
     previous_state: GameState

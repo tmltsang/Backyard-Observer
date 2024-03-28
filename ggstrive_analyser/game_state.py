@@ -3,8 +3,9 @@ from dataclasses import fields
 
 class GameState:
 
-    def __init__(self, time = 0, p1: PlayerState = PlayerState(), p2: PlayerState = PlayerState()):
+    def __init__(self, time = 0, round_end = False,p1: PlayerState = PlayerState(), p2: PlayerState = PlayerState()):
         self.time = time
+        self.round_end = round_end
         self.p1 = p1
         self.p2 = p2
 

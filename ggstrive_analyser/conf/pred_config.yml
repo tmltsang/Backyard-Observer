@@ -1,8 +1,8 @@
 ---
 record: False
 num_frames: 2
-video_path: training/videos/extra
-csv_path: csv
+video_path: leo_johnny_1.mp4
+csv_path: csv/test
 pred_round_features: ['time',
               'p1_health', 'p2_health',
               'p1_tension', 'p2_tension',
@@ -12,8 +12,7 @@ pred_round_features: ['time',
               'p1_just', 'p2_just',
               'p1_punish', 'p2_punish',
               'p1_reversal', 'p2_reversal',
-              'p1_curr_damaged', 'p2_curr_damaged',
-              'p1_round_win', 'p1_set_win']
+              'p1_curr_damaged', 'p2_curr_damaged']
 prod_round_win_field: "p1_round_win"
 pred_set_features: ['time',
               'p1_health', 'p2_health',
