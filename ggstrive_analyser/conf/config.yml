@@ -1,6 +1,6 @@
 ---
 record: True
-num_frames: 4
+num_frames: 6
 video_path: training/videos/gg_matches
 csv_path: csv/gg_matches
 csv_fields:  ['time',

@@ -70,12 +70,8 @@ class WinPredictor:
 
     def predict_win_round(self, current_state: GameState):
         df= pd.DataFrame([current_state.flatten()])
-<<<<<<< Updated upstream
         df = self.__name_transform(df)
-        round_feature_cols = self.cfg['pred_round_features']
-=======
         round_feature_cols = self.cfg,get('pred_round_features')
->>>>>>> Stashed changes
         current_x = df.loc[:, round_feature_cols]
         #print(current_x)
         #print(self.round_model.predict_proba(current_x))
@@ -83,12 +79,8 @@ class WinPredictor:
     
     def predict_win_set(self, current_state: GameState):
         df= pd.DataFrame([current_state.flatten()])
-<<<<<<< Updated upstream
         df = self.__name_transform(df)
-        set_feature_cols = self.cfg['pred_set_features']
-=======
         set_feature_cols = self.cfg.get('pred_set_features')
->>>>>>> Stashed changes
         current_x = df.loc[:, set_feature_cols]
         # print(current_x)
         # print(self.set_model.predict_proba(current_x))

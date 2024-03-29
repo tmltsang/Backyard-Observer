@@ -63,7 +63,7 @@ def process_video(video):
 def main():
     # with open("ggstrive_analyser/conf/config.yml", "r") as ymlfile:
     #     cfg = yaml.safe_load(ymlfile)
-    cfg = Config("pred_config")
+    cfg = Config("config")
     video_path = cfg.get("video_path")
     training_vid_list = []
     if exists(video_path):
@@ -76,7 +76,7 @@ def main():
 
     print(training_vid_list)
     try:
-        pool = Pool(1)
+        pool = Pool(4)
         pool.imap_unordered(process_video, training_vid_list)
     finally:
         pool.close()
