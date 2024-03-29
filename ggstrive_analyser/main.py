@@ -10,7 +10,7 @@ import yaml
 
 
 def main():
-    with open("ggstrive_analyser/conf/config.yml", "r") as ymlfile:
+    with open("ggstrive_analyser/conf/pred_config.yml", "r") as ymlfile:
         cfg = yaml.safe_load(ymlfile)
     video_path = cfg["video_path"]
     training_vid_list = []

@@ -3,6 +3,7 @@ import pandas as pd
 from game_state import GameState
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
+from sklearn import preprocessing
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -15,6 +16,7 @@ class WinPredictor:
     cfg: dict
     round_model:  GaussianNB
     set_model: GaussianNB
+    name_le: preprocessing.LabelEncoder
 
     def __init__(self, cfg: dict):
         self.cfg = cfg
@@ -24,6 +26,11 @@ class WinPredictor:
         file_list = os.listdir(cwd)
 
         df = pd.concat([pd.read_csv(self.cfg['csv_path'] + '/' + f) for f in file_list ], ignore_index=True)
+
+        self.le = preprocessing.LabelEncoder()
+        self.le.fit(pd.concat([df.p1_name, df.p2_name]))
+        df.p1_name = self.le.transform(df.p1_name)
+        df.p2_name = self.le.transform(df.p2_name)
 
         round_feature_cols = self.cfg['pred_round_features']
         round_x = df.loc[:, round_feature_cols]
@@ -55,8 +62,14 @@ class WinPredictor:
 
         #predicted = model.predict(set_x_test.iloc[[100]])
 
+    def __name_transform(self, df: pd.DataFrame):
+        df.p1_name = self.le.transform(df.p1_name)
+        df.p2_name = self.le.transform(df.p2_name)
+        return df
+
     def predict_win_round(self, current_state: GameState):
         df= pd.DataFrame([current_state.flatten()])
+        df = self.__name_transform(df)
         round_feature_cols = self.cfg['pred_round_features']
         current_x = df.loc[:, round_feature_cols]
         #print(current_x)
@@ -65,6 +78,7 @@ class WinPredictor:
     
     def predict_win_set(self, current_state: GameState):
         df= pd.DataFrame([current_state.flatten()])
+        df = self.__name_transform(df)
         set_feature_cols = self.cfg['pred_set_features']
         current_x = df.loc[:, set_feature_cols]
         # print(current_x)
