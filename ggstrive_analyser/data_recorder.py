@@ -3,13 +3,14 @@ import os
 import csv
 from win_state import WinState
 from game_state import GameState
+from config import Config
 
 class DataRecorder(ABC):
     previous_state: GameState
-    cfg: dict
+    cfg: Config
 
     @abstractmethod
-    def __init__(self, cfg: dict):
+    def __init__(self, cfg: Config):
         self.previous_state = GameState()
         self.cfg = cfg
 
@@ -44,10 +45,10 @@ class CSVDataRecorder(DataRecorder):
     current_round_history: list
     current_set_history: list
 
-    def __init__(self, cfg: dict, filename: str):
+    def __init__(self, cfg: Config, filename: str):
         super().__init__(cfg)
-        self.filename = cfg["csv_path"] + "/" +  filename + ".csv"
-        self.fields = cfg["csv_fields"]
+        self.filename = cfg.get("csv_path") + "/" +  filename + ".csv"
+        self.fields = cfg.get("csv_fields")
         self.current_round_history = []
         self.current_set_history = []
 
@@ -87,13 +88,13 @@ class CSVDataRecorder(DataRecorder):
             self.__record_round_win(current_state.win_state == WinState.P1_WIN)
             self.current_set_history += self.current_round_history
             self.current_round_history = []
-            print("P1 wins round %r" % (current_state.win_state))
+            #print("P1 wins round %r" % (current_state.win_state))
 
         set_win_state = self.prev_set_winner(current_state)
         
         if set_win_state != WinState.NO_WIN:
             self.write_set_win(set_win_state)
-            print("P1 wins set %r" % (set_win_state))
+            print(f'{current_state.p1.name}_{current_state.p2.name}: Set win %{set_win_state}')
 
         self.previous_state = current_state
     

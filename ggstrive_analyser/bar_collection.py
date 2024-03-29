@@ -6,6 +6,7 @@ from copy import deepcopy
 from vision_model import BarVisionModel
 from game_state import GameState
 from win_state import WinState
+from config import Config
 
 class BarCollector:
     new_round: bool
@@ -19,9 +20,10 @@ class BarCollector:
     frame_rate: int
     p1_name: str
     p2_name: str
-    cfg: dict
+    cfg: Config
+    bar_vision_model: BarVisionModel
 
-    def __init__(self, cfg: dict, frame_rate: int, p1_name: str, p2_name: str):
+    def __init__(self, cfg: Config, frame_rate: int, p1_name: str, p2_name: str):
         self.new_round = False
         self.round_end = False
         self.between_round = True
@@ -38,6 +40,7 @@ class BarCollector:
         self.ui_on_screen = {"p1": {"just": False, "punish": False, "counter": False, "reversal": False}, "p2":{"just": False, "punish": False, "counter": False, "reversal": False}}
         self.frame_rate = frame_rate
 
+        self.bar_vision_model = BarVisionModel()
         self.cfg = cfg
 
     def __convert_class_to_name(self, boxes_cls, xywhn, bar_cls_dict):
@@ -83,7 +86,7 @@ class BarCollector:
             last_of_round.p2.health = 0
         else:
             last_of_round.p1.health = 0
-        print("Round_finished: " + str(win_state))
+        print(f'{self.p1_name}_{self.p2_name}: Round_finished: {win_state}')
         return last_of_round
 
     def __record_bar_values(self, found_cls):
@@ -178,20 +181,21 @@ class BarCollector:
         # for ui_text, is_on_screen in self.ui_on_screen.keys():
         #     for ui in found_cls[ui_text]:
         #         if self.__is_p1_side(ui):
-        current_state = GameState((self.cfg["num_frames"] * self.frame_count)/self.frame_rate, WinState.NO_WIN, p1, p2)
+        current_state = GameState((self.cfg.get("num_frames") * self.frame_count)/self.frame_rate, WinState.NO_WIN, p1, p2)
         #self.previous = current_state
         return current_state
 
     def read_frame(self, frame) -> GameState:
         self.frame_count += 1
-        results = BarVisionModel.Instance().model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
+        results = self.bar_vision_model.model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
         resultsCpu = results[0].cpu()
         annotated_frame = results[0].plot()
+        cv2.imshow(annotated_frame)
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
 
         found_cls = self.__convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.xywhn.numpy(), self.bar_cls_dict)
-        cv2.imshow("main", annotated_frame)
+        #cv2.imshow("main", annotated_frame)
         if "round_start" in found_cls.keys():
             #Only possible if it never determined a winner, at the start of next round, base it off of last known health values
             self.new_round = True
@@ -211,10 +215,10 @@ class BarCollector:
                 #Should only be a single healthbar left
                 if self.__get_last_p1_health() > self.__get_last_p2_health():
                     win_state = WinState.P1_WIN
-                    print(f'P1 Wins Round with perfect')
+                    print(f'{self.p1_name}_{self.p2_name}: P1 Wins Round with perfect')
                 else:
                     win_state = WinState.P2_WIN
-                    print(f'P2 Wins Round with perfect')
+                    print(f'{self.p1_name}_{self.p2_name}: P2 Wins Round with perfect')
             else:
                 if "slash_p1" in found_cls.keys():
                     win_state = WinState.P1_WIN
