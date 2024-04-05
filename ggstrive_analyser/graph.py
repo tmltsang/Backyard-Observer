@@ -85,7 +85,7 @@ class RoundGraphManager:
 
         if current_state.win_state != WinState.NO_WIN:
             if p1_round_count == 2 or p2_round_count == 2:
-                self.fig.clear()
+                #self.fig.clear()
                 self.reset()
                 # for i, graph in enumerate(self.round_graphs):
                 #     graph.sub_plot.remove()

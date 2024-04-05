@@ -71,7 +71,7 @@ class WinPredictor:
     def predict_win_round(self, current_state: GameState):
         df= pd.DataFrame([current_state.flatten()])
         df = self.__name_transform(df)
-        round_feature_cols = self.cfg,get('pred_round_features')
+        round_feature_cols = self.cfg.get('pred_round_features')
         current_x = df.loc[:, round_feature_cols]
         #print(current_x)
         #print(self.round_model.predict_proba(current_x))

@@ -2,7 +2,6 @@ import sys
 sys.path.insert(0, '.')
 
 import cv2
-from vision import Vision
 import argparse
 import random
 from pathlib import Path
@@ -32,33 +31,37 @@ if use_model:
 
 for path in args.path:
     capture = cv2.VideoCapture(path)
-    frameNr = 0
-    while (True):
+    total_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)
+    #print(total_frames)
+    random_frames = random.sample(range(0, int(total_frames)), 50)
+    if args.full_split:
+        random_frames = range(0, int(total_frames))
+    for frame_num in random_frames:
+        capture.set(cv2.CAP_PROP_POS_FRAMES,frame_num)
         success, frame = capture.read()
         if success:
             #rects = testament_portrait.find(frame)    
-            if random.randrange(0,100) < 1 or args.full_split:
-                if use_model:
-                    results = model(frame)
-                    results[0] = results[0].cuda()
-                    annotated_frame = results[0].plot()
-                    print(results[0].boxes)
-                    cv2.imshow("annonatated_frame", annotated_frame)
-                    label_path = f'{args.output_path_labels.rstrip("/")}/{Path(path).stem}_frame_{frameNr}.txt'
-                    print(label_path)
-                    f = open(label_path, 'w')
-                    for i, cls in enumerate(results[0].boxes.cls):
-                        current_box_coords = ' '.join(str(x) for x in results[0].boxes.xywhn[i].tolist())
-                        print(current_box_coords)
-                        f.write(f'{int(cls)} {current_box_coords}\n')
-                    f.close()
-                print(f'{args.output_path.rstrip("/")}/{Path(path).stem}_frame_{frameNr}.jpg')
-                cv2.imwrite(f'{args.output_path.rstrip("/")}/{Path(path).stem}_frame_{frameNr}.jpg', frame)
+            if use_model:
+                results = model(frame)
+                results[0] = results[0].cuda()
+                annotated_frame = results[0].plot()
+                print(results[0].boxes)
+                cv2.imshow("annonatated_frame", annotated_frame)
+                label_path = f'{args.output_path_labels.rstrip("/")}/{Path(path).stem}_frame_{frame_num}.txt'
+                print(label_path)
+                f = open(label_path, 'w')
+                for i, cls in enumerate(results[0].boxes.cls):
+                    current_box_coords = ' '.join(str(x) for x in results[0].boxes.xywhn[i].tolist())
+                    print(current_box_coords)
+                    f.write(f'{int(cls)} {current_box_coords}\n')
+                f.close()
+            print(f'{args.output_path.rstrip("/")}/{Path(path).stem}_frame_{frame_num}.jpg')
+            cv2.imwrite(f'{args.output_path.rstrip("/")}/{Path(path).stem}_frame_{frame_num}.jpg', frame)
             #cv2.imshow("test", frame)
             if cv2.waitKey(1) == ord('q'):
                 cv2.destroyAllWindows()
                 break
         else:
             break
-        frameNr = frameNr+1
+        #frameNr = frameNr+1
     capture.release()

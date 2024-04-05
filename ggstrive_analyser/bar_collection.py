@@ -190,7 +190,7 @@ class BarCollector:
         results = self.bar_vision_model.model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
         resultsCpu = results[0].cpu()
         annotated_frame = results[0].plot()
-        cv2.imshow(annotated_frame)
+        cv2.imshow("main", annotated_frame)
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
 

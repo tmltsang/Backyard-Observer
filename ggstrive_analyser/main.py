@@ -12,8 +12,8 @@ import yaml
 
 def process_video(video):
     predictor : WinPredictor
-    cfg = Config("config")
-    if not cfg.get("pred_record"):
+    cfg = Config("pred_config")
+    if not cfg.get("record"):
         predictor = WinPredictor(cfg)
     frame_count = 0
     video_name = Path(video).stem
@@ -63,7 +63,7 @@ def process_video(video):
 def main():
     # with open("ggstrive_analyser/conf/config.yml", "r") as ymlfile:
     #     cfg = yaml.safe_load(ymlfile)
-    cfg = Config("config")
+    cfg = Config("pred_config")
     video_path = cfg.get("video_path")
     training_vid_list = []
     if exists(video_path):
@@ -75,12 +75,18 @@ def main():
         raise Exception("The file does not exist")
 
     print(training_vid_list)
-    try:
-        pool = Pool(4)
-        pool.imap_unordered(process_video, training_vid_list)
-    finally:
-        pool.close()
-        pool.join()
+    if cfg.get("record"):
+        try:
+            pool = Pool(1)
+            pool.imap_unordered(process_video, training_vid_list)
+        except Exception as e:
+            print(e)
+        finally:
+            pool.close()
+            pool.join()
+    else:
+        for video in training_vid_list:
+            process_video(video)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
