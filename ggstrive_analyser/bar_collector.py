@@ -74,7 +74,7 @@ class BarCollector(Collector):
         if tension_gear < 2:
             max_tension = ((1 + tension_gear) * 0.5) - 0.01
         return min(max_tension, tension_amount)
-    
+
     def __create_last_round_state(self, win_state: WinState):
         last_of_round = deepcopy(self.previous)
         last_of_round.determine_win_state(win_state)
@@ -185,8 +185,8 @@ class BarCollector(Collector):
         self.frame_count += 1
         results = self.vision_model.model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
         resultsCpu = results[0].cpu()
-        annotated_frame = results[0].plot()
-        cv2.imshow("Bars", annotated_frame)
+        #annotated_frame = results[0].plot()
+        #cv2.imshow("Bars", annotated_frame)
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
 
@@ -274,8 +274,8 @@ class BarCollector(Collector):
                 return current_state
 
         return None
-    
-    #Only used in the case where the vision model fails to see who won. 
+
+    #Only used in the case where the vision model fails to see who won.
     #Uses the last known previous health totals
     def determine_round_winner(self, p1_curr_round_count = 0, p2_curr_round_count = 0):
         #If new set and only 1 player had a round win, we can determine they won the set
@@ -289,10 +289,9 @@ class BarCollector(Collector):
             return WinState.P1_WIN
         elif p2_curr_round_count > self.previous.p2.round_count:
             return WinState.P2_WIN
-        
+
         #Use health as a last resort
         if self.__get_last_p1_health() > self.__get_last_p2_health():
             return WinState.P1_WIN
         else:
             return WinState.P2_WIN
-        

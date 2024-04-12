@@ -19,14 +19,14 @@ class AsukaSpellCollector(Collector):
             self.opponent = players[Config.P1]
         self.bar_cls_dict = None
         self.previous_spells = None
-        
+
     def read_frame(self, frame):
         results = self.vision_model.model.predict(frame, conf=0.5, verbose=False)
         resultsCpu = results[0].cpu()
 
-        #results.pandas().xyxy[0].sort_values('xmin') 
-        annotated_frame = results[0].plot()
-        cv2.imshow("main", annotated_frame)
+        #results.pandas().xyxy[0].sort_values('xmin')
+        #annotated_frame = results[0].plot()
+        #cv2.imshow("main", annotated_frame)
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
         spell_cls = resultsCpu.boxes.cls.numpy()
@@ -44,11 +44,10 @@ class AsukaSpellCollector(Collector):
                 spell_state[player] = {"opponent": self.opponent}
                 for i, spell in list(enumerate(named_spells[:4])):
                     spell_state[player][f"asuka_spell_{i+1}"] = spell
-                del named_spells[4:]
+                del named_spells[:4]
             self.previous_spells = spell_state
             return spell_state
         else:
             return self.previous_spells
         #found_cls = self.convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.xywhn.numpy(), self.bar_cls_dict)
 
-            

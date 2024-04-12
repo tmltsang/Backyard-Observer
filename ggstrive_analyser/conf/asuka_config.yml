@@ -1,7 +1,7 @@
 ---
 record: True
 num_frames: 6
-video_path: training/videos/gg_matches/completed/asuka_aba_1.mkv
+video_path: training/videos/asuka/asuka_asuka_1.mkv
 bar_model_path: runs/detect/bar_batch_updated_combo4/weights/best.pt
 asuka_model_path: 'runs/detect/asuka_with_no_mana2/weights/best.pt'
 csv_path: csv/gg_matches/asuka

@@ -58,8 +58,8 @@ def process_video(video):
                 if current_state:
                     if Config.get("record"):
                         csv_data_recorder.write(current_state.flatten(), current_state.round_win_state, current_state.set_win_state)
-                        asuka_manager.write(asuka_spells)
-
+                        asuka_manager.write(current_state, asuka_spells)
+                        print(asuka_spells[Config.P2])
                     else:
                         rgm.update(current_state, predictor.predict_win_round(current_state)[0][1], predictor.predict_win_set(current_state)[0][1])
             else:
@@ -91,18 +91,18 @@ def main():
         raise Exception("The file does not exist")
 
     print(training_vid_list)
-    # if Config.get("record"):
-    #     try:
-    #         pool = Pool(1)
-    #         pool.imap_unordered(process_video, training_vid_list)
-    #     except Exception as e:
-    #         print(e)
-    #     finally:
-    #         pool.close()
-    #         pool.join()
-    # else:
-    for video in training_vid_list:
-        process_video(video)
+    if Config.get("record"):
+        try:
+            pool = Pool(1)
+            pool.imap_unordered(process_video, training_vid_list)
+        except Exception as e:
+            print(e)
+        finally:
+            pool.close()
+            pool.join()
+    else:
+        for video in training_vid_list:
+            process_video(video)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
