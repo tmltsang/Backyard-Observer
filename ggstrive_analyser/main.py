@@ -1,6 +1,8 @@
 import cv2
-from bar_collection import BarCollector
+from bar_collector import BarCollector
+from asuka_spell_collector import AsukaSpellCollector
 from data_recorder import CSVDataRecorder
+from collections import defaultdict
 from os import listdir, cpu_count
 from os.path import isfile, join, exists
 from pathlib import Path
@@ -8,43 +10,56 @@ from win_predictor import WinPredictor
 from graph import RoundGraphManager
 from config import Config
 from multiprocessing import Pool
-import yaml
 
 def process_video(video):
     predictor : WinPredictor
-    cfg = Config("pred_config")
-    if not cfg.get("record"):
-        predictor = WinPredictor(cfg)
+    if not Config.get("record"):
+        predictor = WinPredictor()
     frame_count = 0
     video_name = Path(video).stem
     capture = cv2.VideoCapture(video)
     frame_rate = capture.get(cv2.CAP_PROP_FPS)
     #All videos are of the formate p1_p2_counter.mkv
+    chars = defaultdict(list)
+    players = {}
     p1_name = video_name.split('_')[0]
     p2_name = video_name.split('_')[1]
+    chars[p1_name].append(Config.P1)
+    players[Config.P1] = p1_name
+    chars[p2_name].append(Config.P2)
+    players[Config.P2] = p2_name
+
     print("%s vs %s" % (p1_name, p2_name))
     #print(frame_rate)
-    bar_collector = BarCollector(cfg, frame_rate, p1_name, p2_name)
+    bar_collector = BarCollector(frame_rate, players)
+    if chars["asuka"] != None or len(chars["asuka"]) > 0:
+        asuka_spell_collector = AsukaSpellCollector(players, chars["asuka"])
     csv_data_recorder: CSVDataRecorder
-    if cfg.get("record"):
-        csv_data_recorder = CSVDataRecorder(cfg, video_name)
+    asuka_csv_data_recorders = {}
+    if Config.get("record"):
+        csv_data_recorder = CSVDataRecorder(filename=f'{Config.get("csv_path")}/{video_name}.csv', 
+                                            fields=Config.get("csv_fields"), 
+                                            round_win_field=Config.get('round_win_field'), 
+                                            set_win_field=Config.get('set_win_field'))
+        for player in chars["asuka"]:
+            asuka_csv_data_recorders[player] = CSVDataRecorder(filename=f'{Config.get("csv_path")}/spell/{video_name}_{player}.csv', 
+                                                    fields=Config.get("asuka_csv_fields"), 
+                                                    round_win_field=Config.get('asuka_win_field'))
     else:
         rgm = RoundGraphManager()
 
     while(capture.isOpened()):
-        #print(frame_count)
         ret, frame = capture.read()
-        if frame_count % cfg.get("num_frames") == 0:
-            #print ("in here")
+        if frame_count % Config.get("num_frames") == 0:
             if ret:
-                #cv2.imshow("main", frame)
                 current_state = bar_collector.read_frame(frame)
-                # if current_state:
-                #     print(current_state.flatten())
+                asuka_spells = asuka_spell_collector.read_frame(frame)
+                #print(asuka_spells)
                 if current_state:
-                    #print(current_state.win_state)
-                    if cfg.get("record"):
-                        csv_data_recorder.write(current_state)
+                    if Config.get("record"):
+                        csv_data_recorder.write(current_state.flatten(), current_state.round_win_state, current_state.set_win_state)
+                        for player in asuka_spells:
+                            asuka_csv_data_recorders[player].write(asuka_spells[player], current_state.round_win_state, current_state.set_win_state)
                     else:
                         rgm.update(current_state, predictor.predict_win_round(current_state)[0][1], predictor.predict_win_set(current_state)[0][1])
             else:
@@ -53,18 +68,21 @@ def process_video(video):
                 cv2.destroyAllWindows()
                 break
         frame_count += 1
-    if cfg.get("record"):
+    if Config.get("record"):
         if len(csv_data_recorder.current_round_history) > 0 or len(csv_data_recorder.current_set_history) > 0:
-            csv_data_recorder.final_write()
+            bar_collector.determine_round_winner()
+            csv_data_recorder.final_write(bar_collector.determine_round_winner())
+
+        for player in chars["asuka"]:
+            if len(asuka_csv_data_recorders[player].current_round_history) > 0:
+                asuka_csv_data_recorders[player].final_write(bar_collector.determine_round_winner())
     capture.release()
     #cv2.destroyAllWindows()
 
 
 def main():
-    # with open("ggstrive_analyser/conf/config.yml", "r") as ymlfile:
-    #     cfg = yaml.safe_load(ymlfile)
-    cfg = Config("pred_config")
-    video_path = cfg.get("video_path")
+    Config.load("asuka_config")
+    video_path = Config.get("video_path")
     training_vid_list = []
     if exists(video_path):
         if isfile(video_path):
@@ -75,18 +93,18 @@ def main():
         raise Exception("The file does not exist")
 
     print(training_vid_list)
-    if cfg.get("record"):
-        try:
-            pool = Pool(1)
-            pool.imap_unordered(process_video, training_vid_list)
-        except Exception as e:
-            print(e)
-        finally:
-            pool.close()
-            pool.join()
-    else:
-        for video in training_vid_list:
-            process_video(video)
+    # if Config.get("record"):
+    #     try:
+    #         pool = Pool(1)
+    #         pool.imap_unordered(process_video, training_vid_list)
+    #     except Exception as e:
+    #         print(e)
+    #     finally:
+    #         pool.close()
+    #         pool.join()
+    # else:
+    for video in training_vid_list:
+        process_video(video)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':

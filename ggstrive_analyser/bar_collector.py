@@ -1,29 +1,26 @@
 import cv2
-from collections import defaultdict
 from time import time
 from player_state import PlayerState
 from copy import deepcopy
-from vision_model import BarVisionModel
+from vision_model import VisionModel
 from game_state import GameState
 from win_state import WinState
 from config import Config
+from collector import Collector
 
-class BarCollector:
+class BarCollector(Collector):
     new_round: bool
     round_end: bool
     between_round: bool
     init_bars: dict
     frameCount: int
     previous: GameState
-    bar_cls_dict: dict
     ui_on_screen: dict
     frame_rate: int
     p1_name: str
     p2_name: str
-    cfg: Config
-    bar_vision_model: BarVisionModel
 
-    def __init__(self, cfg: Config, frame_rate: int, p1_name: str, p2_name: str):
+    def __init__(self, frame_rate: int, players: dict):
         self.new_round = False
         self.round_end = False
         self.between_round = True
@@ -33,24 +30,23 @@ class BarCollector:
         self.init_bars["empty_risc"] = {}
         self.init_bars["full_burst"] = {}
         self.frame_count = 0
-        self.p1_name = p1_name
-        self.p2_name = p2_name
-        self.previous = GameState(0, PlayerState(name=p1_name), PlayerState(name=p2_name))
+        self.p1_name = players[Config.P1]
+        self.p2_name = players[Config.P2]
+        self.previous = GameState(0, PlayerState(name=self.p1_name), PlayerState(name=self.p2_name))
         self.bar_cls_dict = None
         self.ui_on_screen = {"p1": {"just": False, "punish": False, "counter": False, "reversal": False}, "p2":{"just": False, "punish": False, "counter": False, "reversal": False}}
         self.frame_rate = frame_rate
 
-        self.bar_vision_model = BarVisionModel()
-        self.cfg = cfg
+        self.vision_model = VisionModel(Config.get('bar_model_path'))
 
-    def __convert_class_to_name(self, boxes_cls, xywhn, bar_cls_dict):
-        found_cls = defaultdict(list)
-        for i, cls in enumerate(boxes_cls):
-            found_cls[bar_cls_dict[cls]].append(xywhn[i])
-        return found_cls
+    # def __convert_class_to_name(self, boxes_cls, xywhn, bar_cls_dict):
+    #     found_cls = defaultdict(list)
+    #     for i, cls in enumerate(boxes_cls):
+    #         found_cls[bar_cls_dict[cls]].append(xywhn[i])
+    #     return found_cls
 
-    def __is_p1_side(self, xywhn):
-        return xywhn[0] < 0.5
+    # def __is_p1_side(self, xywhn):
+    #     return xywhn[0] < 0.5
 
     #Special case for the counter text as that can appear in the middle
     #It is assumed that only one character will be 'damaged' at the current time and the other player will be given the counter
@@ -59,7 +55,7 @@ class BarCollector:
         if xywhn[2] > 0.5:
             return not p1_curr_damaged
         else:
-            return self.__is_p1_side(xywhn)
+            return self.is_p1_side(xywhn)
 
     def __bar_clamp(self, bar_amount):
         return max(min(bar_amount, 1),0)
@@ -81,7 +77,7 @@ class BarCollector:
     
     def __create_last_round_state(self, win_state: WinState):
         last_of_round = deepcopy(self.previous)
-        last_of_round.win_state = win_state
+        last_of_round.determine_win_state(win_state)
         if win_state == WinState.P1_WIN:
             last_of_round.p2.health = 0
         else:
@@ -94,7 +90,7 @@ class BarCollector:
         p1_health = self.__get_last_p1_health()
         p2_health = self.__get_last_p2_health()
         for health_bar in found_cls["healthbar"]:
-            if self.__is_p1_side(health_bar):
+            if self.is_p1_side(health_bar):
                 p1_health = self.__bar_clamp(float(health_bar[2]/self.init_bars["healthbar"]["p1"]))
             else:
                 p2_health = self.__bar_clamp(float(health_bar[2]/self.init_bars["healthbar"]["p2"]))
@@ -106,13 +102,13 @@ class BarCollector:
         p2_tension_gear = 0
 
         for tension_gear in found_cls["tension_gears"]:
-            if self.__is_p1_side(tension_gear):
+            if self.is_p1_side(tension_gear):
                 p1_tension_gear += 1
             else:
                 p2_tension_gear += 1
 
         for empty_tension in found_cls["empty_tension"]:
-            if self.__is_p1_side(empty_tension):
+            if self.is_p1_side(empty_tension):
                 p1_tension = self.__bar_clamp(self.__tension_gear_check(1 - float(empty_tension[2]/self.init_bars["empty_tension"]["p1"]), p1_tension_gear))
             else:
                 p2_tension = self.__bar_clamp(self.__tension_gear_check(1 - float(empty_tension[2]/self.init_bars["empty_tension"]["p2"]), p2_tension_gear))
@@ -120,7 +116,7 @@ class BarCollector:
         p1_risc = self.previous.p1.risc
         p2_risc = self.previous.p2.risc
         for empty_risc in found_cls["empty_risc"]:
-            if self.__is_p1_side(empty_risc):
+            if self.is_p1_side(empty_risc):
                 p1_risc = self.__bar_clamp(1 - float(empty_risc[2]/self.init_bars["empty_risc"]["p1"]))
             else:
                 p2_risc = self.__bar_clamp(1 - float(empty_risc[2]/self.init_bars["empty_risc"]["p2"]))
@@ -128,12 +124,12 @@ class BarCollector:
         p1_burst = self.previous.p1.burst
         p2_burst = self.previous.p2.burst
         for burst in found_cls["burst"]:
-            if self.__is_p1_side(burst):
+            if self.is_p1_side(burst):
                 p1_burst = self.__bar_clamp(float(burst[2]/self.init_bars["full_burst"]["p1"]))
             else:
                 p2_burst = self.__bar_clamp(float(burst[2]/self.init_bars["full_burst"]["p2"]))
         for full_burst in found_cls["full_burst"]:
-            if self.__is_p1_side(full_burst):
+            if self.is_p1_side(full_burst):
                 p1_burst = 1.0
             else:
                 p2_burst = 1.0
@@ -141,7 +137,7 @@ class BarCollector:
         p1_curr_damaged = False
         p2_curr_damaged = False
         for curr_damaged in found_cls["health_lost"]:
-            if self.__is_p1_side(curr_damaged):
+            if self.is_p1_side(curr_damaged):
                 p1_curr_damaged = True
             else:
                 p2_curr_damaged = True
@@ -159,7 +155,7 @@ class BarCollector:
                 if ui_text == "counter":
                     is_p1_side = self.__is_p1_side_counter(ui, p1_curr_damaged)
                 else:
-                    is_p1_side = self.__is_p1_side(ui)
+                    is_p1_side = self.is_p1_side(ui)
                 if is_p1_side:
                     if not self.ui_on_screen["p1"][ui_text]:
                         p1_ui_counts[ui_text] += 1
@@ -181,32 +177,25 @@ class BarCollector:
         # for ui_text, is_on_screen in self.ui_on_screen.keys():
         #     for ui in found_cls[ui_text]:
         #         if self.__is_p1_side(ui):
-        current_state = GameState((self.cfg.get("num_frames") * self.frame_count)/self.frame_rate, WinState.NO_WIN, p1, p2)
+        current_state = GameState((Config.get("num_frames") * self.frame_count)/self.frame_rate, WinState.NO_WIN, WinState.NO_WIN, p1, p2)
         #self.previous = current_state
         return current_state
 
     def read_frame(self, frame) -> GameState:
         self.frame_count += 1
-        results = self.bar_vision_model.model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
+        results = self.vision_model.model.predict(frame, conf=0.6, imgsz=(640, 768), verbose=False)
         resultsCpu = results[0].cpu()
         annotated_frame = results[0].plot()
-        cv2.imshow("main", annotated_frame)
+        cv2.imshow("Bars", annotated_frame)
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
 
-        found_cls = self.__convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.xywhn.numpy(), self.bar_cls_dict)
+        found_cls = self.convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.xywhn.numpy(), self.bar_cls_dict)
         #cv2.imshow("main", annotated_frame)
         if "round_start" in found_cls.keys():
             #Only possible if it never determined a winner, at the start of next round, base it off of last known health values
             self.new_round = True
             self.between_round = False
-            if self.round_end:
-                if self.__get_last_p1_health() > self.__get_last_p2_health():
-                    win_state = WinState.P1_WIN
-                else:
-                    win_state = WinState.P2_WIN
-                self.round_end = False
-                return self.__create_last_round_state(win_state)
 
         elif ("slash" in found_cls.keys() or "perfect" in found_cls.keys()) and not self.between_round:
             self.round_end = True
@@ -241,7 +230,7 @@ class BarCollector:
                 #Determine if new set
                 for bar_name in self.init_bars.keys():
                     for bar in found_cls[bar_name]:
-                        if self.__is_p1_side(bar):
+                        if self.is_p1_side(bar):
                             self.init_bars[bar_name]["p1"] = bar[2]
                             #print(f'P1 %s bar init to value %f' % (bar_name, self.init_bars[bar_name]["p1"]))
                         else:
@@ -264,10 +253,15 @@ class BarCollector:
                 self.previous.p2.reversal = 0
 
                 for heart_lost in found_cls["heart_lost"]:
-                    if self.__is_p1_side(heart_lost):
+                    if self.is_p1_side(heart_lost):
                         p2_curr_round_count += 1
                     else:
                         p1_curr_round_count += 1
+
+                if self.round_end:
+                    win_state = self.determine_round_winner(p1_curr_round_count, p2_curr_round_count)
+                    self.round_end = False
+                    return self.__create_last_round_state(win_state)
 
                 self.new_round = False
                 self.frame_count = 0
@@ -278,22 +272,27 @@ class BarCollector:
                 #print("%d %d" % (p1_curr_round_count, p2_curr_round_count))
                 self.previous = current_state
                 return current_state
-        # if self.round_end and len(found_cls["p1_slash"]) > 0 or len(found_cls["p2_slash"]) > 0:
-        #     self.round_end = False
-        #     self.between_round = True
-        #     #Should only be a single healthbar left
-        #     if self.__get_last_p1_health() != 0 and self.__get_last_p2_health() != 0:
-        #         last_of_round = self.previous
-        #         last_of_round.round_end = True
-        #         if self.__is_p1_side(found_cls["healthbar"][0]):
-        #             last_of_round.p2.health = 0
-        #             last_of_round.win_state = WinState.P1_WIN
-        #             print(f'P1 Wins Round with final Health: %f' % self.__get_last_p1_health())
-        #             return last_of_round
-        #         else:
-        #             last_of_round.p1.health = 0
-        #             last_of_round.win_state = WinState.P2_WIN
-        #             print(f'P2 Wins Round with final Health: %f' % self.__get_last_p2_health())
-        #             return last_of_round
 
         return None
+    
+    #Only used in the case where the vision model fails to see who won. 
+    #Uses the last known previous health totals
+    def determine_round_winner(self, p1_curr_round_count = 0, p2_curr_round_count = 0):
+        #If new set and only 1 player had a round win, we can determine they won the set
+        if p1_curr_round_count + p2_curr_round_count == 0:
+            if self.previous.p1.round_count == 1 and self.previous.p2.round_count == 0:
+                return WinState.P1_WIN
+            elif self.previous.p1.round_count == 1 and self.previous.p1.round_count == 0:
+                return WinState.P2_WIN
+        # Determined by the hearts in the next round but not a new set
+        if p1_curr_round_count > self.previous.p1.round_count:
+            return WinState.P1_WIN
+        elif p2_curr_round_count > self.previous.p2.round_count:
+            return WinState.P2_WIN
+        
+        #Use health as a last resort
+        if self.__get_last_p1_health() > self.__get_last_p2_health():
+            return WinState.P1_WIN
+        else:
+            return WinState.P2_WIN
+        
