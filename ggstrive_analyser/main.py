@@ -14,6 +14,7 @@ from multiprocessing import Pool
 
 def process_video(video):
     predictor : WinPredictor
+    Config.load("asuka_config")
     if not Config.get("record"):
         predictor = WinPredictor()
     frame_count = 0
@@ -59,7 +60,7 @@ def process_video(video):
                     if Config.get("record"):
                         csv_data_recorder.write(current_state.flatten(), current_state.round_win_state, current_state.set_win_state)
                         asuka_manager.write(current_state, asuka_spells)
-                        print(asuka_spells[Config.P2])
+                        #print(asuka_spells[Config.P2])
                     else:
                         rgm.update(current_state, predictor.predict_win_round(current_state)[0][1], predictor.predict_win_set(current_state)[0][1])
             else:
@@ -93,7 +94,7 @@ def main():
     print(training_vid_list)
     if Config.get("record"):
         try:
-            pool = Pool(1)
+            pool = Pool(4)
             pool.imap_unordered(process_video, training_vid_list)
         except Exception as e:
             print(e)

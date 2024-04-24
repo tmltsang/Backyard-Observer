@@ -1,10 +1,10 @@
 ---
 record: True
-num_frames: 6
-video_path: training/videos/asuka/asuka_asuka_1.mkv
+num_frames: 12
+video_path: training/videos/asuka/
 bar_model_path: runs/detect/bar_batch_updated_combo4/weights/best.pt
 asuka_model_path: 'runs/detect/asuka_with_no_mana2/weights/best.pt'
-csv_path: csv/gg_matches/asuka
+csv_path: csv/asuka
 csv_fields:  ['time',
               'p1_name', 'p2_name',
               'p1_health', 'p2_health',
