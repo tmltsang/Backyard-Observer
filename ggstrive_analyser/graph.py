@@ -16,7 +16,7 @@ class RTGraph:
         self.vlines = []
         self.sub_plot = sub_plot
         self.window_size = window_size
-    
+
     def update(self, new_y_value, add_vline_color = ""):
         self.y_history.append(new_y_value)
         if len(self.y_history) > self.window_size:
@@ -51,7 +51,7 @@ class RoundGraphManager:
         self.fig.suptitle("P1 Win %")
         self.round_graphs = [RTGraph(self.__new_sub_plot(2, 1, 1, "Round 1"))]
         self.set_graph = RTGraph(self.__new_sub_plot(2, 1, 2, "Set"))
-    
+
     def __new_sub_plot(self, ncols, nrows, index, title):
         sub_plot = self.fig.add_subplot(ncols, nrows, index)
         sub_plot.set_title(title)
@@ -65,15 +65,15 @@ class RoundGraphManager:
         return sub_plot
 
 
-    
+
     def update(self, current_state: GameState, p1_round_predict, p1_set_predict):
         vline_color = ""
         p1_round_count = current_state.p1.round_count
         p2_round_count = current_state.p2.round_count
-        if current_state.win_state == WinState.P1_WIN:
+        if current_state.round_win_state == WinState.P1_WIN:
             vline_color = "r"
             p1_round_count += 1
-        elif current_state.win_state == WinState.P2_WIN:
+        elif current_state.round_win_state == WinState.P2_WIN:
             vline_color = "b"
             p2_round_count += 1
 
@@ -83,29 +83,15 @@ class RoundGraphManager:
         self.round_graphs[-1].update(p1_round_predict)
         self.set_graph.update(p1_set_predict, add_vline_color=vline_color)
 
-        if current_state.win_state != WinState.NO_WIN:
-            if p1_round_count == 2 or p2_round_count == 2:
-                #self.fig.clear()
+        if current_state.set_win_state != WinState.NO_WIN:
                 self.reset()
-                # for i, graph in enumerate(self.round_graphs):
-                #     graph.sub_plot.remove()
-                #     graph.y_history = []
-                # self.round_graphs = [self.round_graphs[0]]
-                # self.round_graphs[0].sub_plot = self.__new_sub_plot(2, 1, 1, "Round 1")
-                # self.set_graph.y_history = []
-                # self.set_graph.vlines = []
-            else:
-                curr_round_count = p1_round_count + p2_round_count + 1
-                self.round_graphs.append(RTGraph(self.__new_sub_plot(2, curr_round_count, curr_round_count, "Round "+ str(curr_round_count))))
-                for i in range(curr_round_count - 1):
-                    self.round_graphs[i].sub_plot.remove()
-                    self.round_graphs[i].sub_plot = self.__new_sub_plot(2, curr_round_count, i+1, "Round "+ str(i+1))
-                    self.round_graphs[i].plot()
-        # round_graph.update(predictor.predict_win_round(current_state)[0][1])
-        # set_graph.update(predictor.predict_win_set(current_state)[0][1], add_vline_color=vline_color)
-        # print(f'Round Win: %f' % (predictor.predict_win_round(current_state)[0][0]))
-        # print(f'Set Win: %f' % (predictor.predict_win_set(current_state)[0][0]))
+        elif current_state.round_win_state != WinState.NO_WIN:
+            curr_round_count = p1_round_count + p2_round_count + 1
+            self.round_graphs.append(RTGraph(self.__new_sub_plot(2, curr_round_count, curr_round_count, "Round "+ str(curr_round_count))))
+            for i in range(curr_round_count - 1):
+                self.round_graphs[i].sub_plot.remove()
+                self.round_graphs[i].sub_plot = self.__new_sub_plot(2, curr_round_count, i+1, "Round "+ str(i+1))
+                self.round_graphs[i].plot()
         plt.show()
-    
 
-    
+

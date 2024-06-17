@@ -63,14 +63,18 @@ class CSVDataRecorder(DataRecorder):
         self.current_set_history = []
 
     def write(self, data: dict, round_win_state: WinState, set_win_state: WinState = WinState.NO_WIN):
-        self.current_round_history.append(data)
         if round_win_state != WinState.NO_WIN:
+            #Final round data is identical to the previous except the losing players health is set to 0. Avoid doubling up
+            self.current_round_history[-1] = data
             if self.round_mode:
                 self.write_round_win(round_win_state)
             else:
                 self.__record_round_win(round_win_state == WinState.P1_WIN)
                 self.current_set_history += self.current_round_history
             self.current_round_history = []
+        else:
+            self.current_round_history.append(data)
+
             #print("P1 wins round %r" % (current_state.win_state))
 
         if not self.round_mode:

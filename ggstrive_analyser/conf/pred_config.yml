@@ -1,31 +1,18 @@
 ---
 record: False
-num_frames: 4
-video_path: training/videos/sol_elphelt_1.mp4
-bar_vision_model: runs/detect/bar_batch_updated_combo4/weights/best.pt
-csv_path: csv/gg_matches
-pred_round_features: ['time',
-              'p1_name', 'p2_name',
+num_frames: 6
+video_path: videos/arcsys_world_tour/sol_nagoriyuki_1_umisho_verix_wsf1.mp4
+bar_model_path: runs/detect/bar_batch3/weights/best.pt
+pred_round_features: [
               'p1_health', 'p2_health',
               'p1_tension', 'p2_tension',
               'p1_burst', 'p2_burst',
-              'p1_risc', 'p2_risc',
               'p1_counter', 'p2_counter',
-              'p1_just', 'p2_just',
-              'p1_punish', 'p2_punish',
-              'p1_reversal', 'p2_reversal',
               'p1_curr_damaged', 'p2_curr_damaged']
 pred_round_win_field: "p1_round_win"
-pred_set_features: ['time',
-              'p1_name', 'p2_name',
-              'p1_health', 'p2_health',
-              'p1_tension', 'p2_tension',
+pred_set_features: [
               'p1_burst', 'p2_burst',
-              'p1_risc', 'p2_risc',
-              'p1_round_count', 'p2_round_count',
-              'p1_counter', 'p2_counter',
-              'p1_just', 'p2_just',
-              'p1_punish', 'p2_punish',
-              'p1_reversal', 'p2_reversal',
-              'p1_curr_damaged', 'p2_curr_damaged']
+              'p1_round_count', 'p2_round_count',]
 pred_set_win_field: "p1_set_win"
+round_model_path: notebooks/pipeline_round_mlp.pkl
+set_model_path: notebooks/set_pipeline_mlp.pkl

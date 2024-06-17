@@ -1,9 +1,9 @@
 ---
 record: True
-num_frames: 6
-video_path: training/videos/gg_matches
-bar_model_path: runs/detect/bar_batch_updated_combo4/weights/best.pt
-csv_path: csv/gg_matches
+num_frames: 3
+video_path: videos/arcsys_world_tour/
+bar_model_path: runs/detect/bar_batch3/weights/best.pt
+csv_path: videos/arcsys_world_tour/data/test
 csv_fields:  ['time',
               'p1_name', 'p2_name',
               'p1_health', 'p2_health',
@@ -19,3 +19,5 @@ csv_fields:  ['time',
               'p1_round_win', 'p1_set_win']
 round_win_field: "p1_round_win"
 set_win_field: "p1_set_win"
+asuka_csv_fields: ['opponent', 'asuka_spell_1', 'asuka_spell_2', 'asuka_spell_3', 'asuka_spell_4', 'asuka_win']
+asuka_win_field: "asuka_win"

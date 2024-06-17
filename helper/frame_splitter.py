@@ -30,17 +30,17 @@ if use_model:
     model = YOLO(args.use_model)
 
 for path in args.path:
+    print(path)
     capture = cv2.VideoCapture(path)
     total_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)
-    #print(total_frames)
-    random_frames = random.sample(range(0, int(total_frames)), 50)
+    random_frames = random.sample(range(0, int(total_frames)), 3)
     if args.full_split:
         random_frames = range(0, int(total_frames))
     for frame_num in random_frames:
         capture.set(cv2.CAP_PROP_POS_FRAMES,frame_num)
         success, frame = capture.read()
         if success:
-            #rects = testament_portrait.find(frame)    
+            #rects = testament_portrait.find(frame)
             if use_model:
                 results = model(frame)
                 results[0] = results[0].cuda()

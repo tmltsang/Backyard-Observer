@@ -1,8 +1,8 @@
 import random
 import os
 
-source = "training/train_asuka"
-dest = "training/valid_asuka"
+source = "training/train_bar"
+dest = "training/valid_bar"
 
 all_image_names = sorted(os.listdir(f"{source}/images/"))
 valid_names = random.sample(all_image_names, int(len(all_image_names)/15))
