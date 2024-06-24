@@ -22,3 +22,4 @@ set_win_field: "p1_set_win"
 asuka_csv_fields: ['opponent', 'asuka_spell_1', 'asuka_spell_2', 'asuka_spell_3', 'asuka_spell_4', 'asuka_win']
 asuka_win_field: "asuka_win"
 debug: False
+use_round_start_image: False

@@ -210,11 +210,9 @@ class BarCollector(Collector):
             self.bar_cls_dict = results[0].names
 
         found_cls = self.convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.xywhn.numpy(), self.bar_cls_dict)
-        #cv2.imshow("main", annotated_frame)
-        # if "round_start" in found_cls.keys():
-        #     #Only possible if it never determined a winner, at the start of next round, base it off of last known health values
-        #     self.new_round = True
-        #     self.between_round = False
+        if "round_start" in found_cls.keys() and Config.get('use_round_start_image'):
+            self.new_round = True
+            self.between_round = False
 
         if ("slash" in found_cls.keys() or "perfect" in found_cls.keys()) and not self.between_round:
             self.round_end = True
@@ -253,7 +251,7 @@ class BarCollector(Collector):
             #Determine new round without relying on "round_start" graphic
             if not self.new_round and len(found_cls["heart_lost"]) + len(found_cls["heart"]) == 4 and\
                 (p1_curr_round_count + p2_curr_round_count) != len(found_cls["heart_lost"])  or\
-                self.first_round:
+                self.first_round and not Config.get('use_round_start_image'):
                 self.new_round_counter += 1
                 if self.new_round_counter > 5:
                     self.new_round = True
