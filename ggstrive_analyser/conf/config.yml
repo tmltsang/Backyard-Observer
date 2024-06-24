@@ -1,7 +1,7 @@
 ---
 record: True
 num_frames: 3
-video_path: videos/arcsys_world_tour/
+video_path: videos/arcsys_world_tour
 bar_model_path: runs/detect/bar_batch3/weights/best.pt
 csv_path: videos/arcsys_world_tour/data/test
 csv_fields:  ['time',
@@ -21,3 +21,4 @@ round_win_field: "p1_round_win"
 set_win_field: "p1_set_win"
 asuka_csv_fields: ['opponent', 'asuka_spell_1', 'asuka_spell_2', 'asuka_spell_3', 'asuka_spell_4', 'asuka_win']
 asuka_win_field: "asuka_win"
+debug: False

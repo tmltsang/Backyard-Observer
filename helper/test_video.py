@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 model = YOLO('runs/detect/bar_batch3/weights/best.pt')
-capture = cv2.VideoCapture('videos/arcsys_world_tour/sol_nagoriyuki_1_umisho_verix_wsf1.mp4')
+capture = cv2.VideoCapture('videos/arcsys_world_tour/nagoriyuki_may_1_verix_slash_gf.mp4')
 if (capture.isOpened() == False):
     print("Error opening file")
 framecount = 0
@@ -11,9 +11,9 @@ while(capture.isOpened()):
     ret, frame = capture.read()
     if framecount % 3 == 0:
         if ret:
-            results = model.predict(frame, conf=0.8, verbose=True)
+            results = model.predict(frame, conf=0.7, show_labels=False, verbose=True)
             resultsCpu = results[0].cpu()
-            annotated_frame = results[0].plot()
+            annotated_frame = results[0].plot(labels=False, conf=False)
             # spell_cls = resultsCpu.boxes.cls.numpy()
             # spell_xywhn = resultsCpu.boxes.xywhn.numpy()
             # #Get the indexes of the sorted list

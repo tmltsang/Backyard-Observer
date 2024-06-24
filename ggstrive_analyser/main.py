@@ -99,7 +99,7 @@ def main():
         raise Exception("The file does not exist")
 
     print(training_vid_list)
-    if Config.get("record"):
+    if Config.get("record") or not Config.get("debug"):
         try:
             pool = Pool(4)
             pool.imap_unordered(process_video, training_vid_list)
@@ -111,7 +111,7 @@ def main():
     else:
         for video in training_vid_list:
             process_video(video)
-    cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main()
