@@ -204,27 +204,35 @@ class BarCollector(Collector):
         results = self.vision_model.model.predict(frame, conf=0.7, imgsz=(640, 768), verbose=False)
         resultsCpu = results[0].cpu()
         if Config.get("debug"):
-            annotated_frame = results[0].plot(labels=False, conf=False)
+            annotated_frame = results[0].plot(labels=True, conf=True)
             cv2.imshow("Bars", annotated_frame)
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
 
         found_cls = self.convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.xywhn.numpy(), self.bar_cls_dict)
-        if "round_start" in found_cls.keys() and Config.get('use_round_start_image'):
-            self.new_round = True
-            self.between_round = False
+        found_conf = self.convert_class_to_name(resultsCpu.boxes.cls.numpy(), resultsCpu.boxes.conf.numpy(), self.bar_cls_dict)
+        if "round_start" in found_cls.keys():
+            if Config.get('use_round_start_image'):
+                self.new_round = True
+                self.between_round = False
+            else:
+                #Round Start is a large, disruptive image that can affect values of bars
+                return None
 
         if ("slash" in found_cls.keys() or "perfect" in found_cls.keys()) and not self.between_round:
             self.round_end = True
             win_state = WinState.NO_WIN
             if "perfect" in found_cls.keys():
                 #Should only be a single healthbar left
-                if self.__get_last_p1_health() > self.__get_last_p2_health():
-                    win_state = WinState.P1_WIN
-                    print(f'{self.p1_name}_{self.p2_name}: P1 Wins Round with perfect')
+                if any(conf > 0.95 for conf in found_conf['perfect']):
+                    if self.__get_last_p1_health() > self.__get_last_p2_health():
+                        win_state = WinState.P1_WIN
+                        print(f'{self.p1_name}_{self.p2_name}: P1 Wins Round with perfect')
+                    else:
+                        win_state = WinState.P2_WIN
+                        print(f'{self.p1_name}_{self.p2_name}: P2 Wins Round with perfect')
                 else:
-                    win_state = WinState.P2_WIN
-                    print(f'{self.p1_name}_{self.p2_name}: P2 Wins Roun1d with perfect')
+                    cv2.imwrite(f'videos/error/perfect/frame_{self.frame_count}.jpg', frame)
             else:
                 if "slash_p1" in found_cls.keys():
                     self.round_end_counter['p1'] += 1
@@ -234,9 +242,6 @@ class BarCollector(Collector):
                     self.round_end_counter['p2'] += 1
                     if self.round_end_counter['p2'] > 3:
                         win_state = WinState.P2_WIN
-                else:
-                    self.round_end_counter['p1'] = 0
-                    self.round_end_counter['p2'] = 0
             if win_state != win_state.NO_WIN:
                 self.round_end_counter['p1'] = 0
                 self.round_end_counter['p2'] = 0
@@ -344,6 +349,12 @@ class BarCollector(Collector):
             return WinState.P1_WIN
         elif p2_curr_round_count > self.previous.p2.round_count:
             return WinState.P2_WIN
+
+        #If a player is currently being damaged when round ends, they must have lost
+        if self.previous.p1.curr_damaged:
+            return WinState.P2_WIN
+        elif self.previous.p2.curr_damaged:
+            return WinState.P1_WIN
 
         #Use health as a last resort
         if self.__get_last_p1_health() > self.__get_last_p2_health():

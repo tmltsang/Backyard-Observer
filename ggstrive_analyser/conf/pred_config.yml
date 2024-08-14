@@ -1,8 +1,8 @@
 ---
 record: False
 num_frames: 6
-video_path: videos/arcsys_world_tour/sol_nagoriyuki_1_umisho_verix_wsf1.mp4
-bar_model_path: runs/detect/bar_batch3/weights/best.pt
+video_path: [videos/arcsys_world_tour/sol_nagoriyuki_1_umisho_verix_wsf1.mp4]
+bar_model_path: models/vision/bars/best.pt
 pred_round_features: [
               'p1_health', 'p2_health',
               'p1_tension', 'p2_tension',

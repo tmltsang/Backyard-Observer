@@ -13,6 +13,7 @@ class WinPredictor:
     name_le: preprocessing.LabelEncoder
 
     def __init__(self):
+        print(Config.get('round_model_path'))
         with open(Config.get('round_model_path'), "rb") as f:
             self.round_model = pickle.load(f)
 

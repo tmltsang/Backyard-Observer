@@ -5,6 +5,7 @@ from game_state import GameState
 from config import Config
 from win_state import WinState
 from collections import defaultdict
+from tournament_index_manager import TournamentIndexManager
 
 class AsukaManager:
     asuka_spell_collector: AsukaSpellCollector
@@ -40,10 +41,12 @@ class AsukaManager:
         else:
             return curr_win_state
 
-    def write(self, current_state: GameState, asuka_spells: dict):
+    def write(self, current_state: GameState, asuka_spells: dict, tournament_index_manager: TournamentIndexManager = None):
         for player in asuka_spells:
             round_win_state = self.determine_asuka_winner(player, current_state.round_win_state)
-            self.asuka_csv_data_recorders[player].write(asuka_spells[player], round_win_state)
+            asuka_spells[player]['time'] = current_state.time
+            asuka_spells[player]['player_side'] = player
+            self.asuka_csv_data_recorders[player].write(asuka_spells[player], round_win_state, tournament_index_manager=tournament_index_manager)
 
             self.round_spells[player].update([value for (key, value) in asuka_spells[player].items() if 'asuka_spell' in key.lower()])
             #End of round, report what spells were seen

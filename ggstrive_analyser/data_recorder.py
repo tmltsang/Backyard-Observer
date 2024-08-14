@@ -5,6 +5,7 @@ import json
 from win_state import WinState
 from game_state import GameState
 from config import Config
+from tournament_index_manager import TournamentIndexManager
 
 class DataRecorder(ABC):
     @abstractmethod
@@ -24,6 +25,8 @@ class CSVDataRecorder(DataRecorder):
         super().__init__()
         self.filename = filename
         self.fields = fields
+        if Config.get("tournament_mode"):
+            self.fields = fields + Config.get("tournament_csv_fields")
         self.current_round_history = []
         self.current_set_history = []
         self.round_win_field = round_win_field
@@ -62,7 +65,9 @@ class CSVDataRecorder(DataRecorder):
         self.current_round_history = []
         self.current_set_history = []
 
-    def write(self, data: dict, round_win_state: WinState, set_win_state: WinState = WinState.NO_WIN):
+    def write(self, data: dict, round_win_state: WinState, set_win_state: WinState = WinState.NO_WIN, tournament_index_manager: TournamentIndexManager = None):
+        if tournament_index_manager != None:
+            data = tournament_index_manager.add_tr_data(data)
         if round_win_state != WinState.NO_WIN:
             #Final round data is identical to the previous except the losing players health is set to 0. Avoid doubling up
             self.current_round_history[-1] = data
@@ -74,9 +79,6 @@ class CSVDataRecorder(DataRecorder):
             self.current_round_history = []
         else:
             self.current_round_history.append(data)
-
-            #print("P1 wins round %r" % (current_state.win_state))
-
         if not self.round_mode:
             if set_win_state != WinState.NO_WIN:
                 self.write_set_win(set_win_state)

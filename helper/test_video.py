@@ -1,9 +1,10 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import sys
 
 model = YOLO('runs/detect/bar_batch3/weights/best.pt')
-capture = cv2.VideoCapture('videos/arcsys_world_tour/nagoriyuki_may_1_verix_slash_gf.mp4')
+capture = cv2.VideoCapture(sys.argv[1])
 if (capture.isOpened() == False):
     print("Error opening file")
 framecount = 0
@@ -11,7 +12,7 @@ while(capture.isOpened()):
     ret, frame = capture.read()
     if framecount % 3 == 0:
         if ret:
-            results = model.predict(frame, conf=0.7, show_labels=False, verbose=True)
+            results = model.predict(frame, conf=0.70, show_labels=False, verbose=True)
             resultsCpu = results[0].cpu()
             annotated_frame = results[0].plot(labels=False, conf=False)
             # spell_cls = resultsCpu.boxes.cls.numpy()

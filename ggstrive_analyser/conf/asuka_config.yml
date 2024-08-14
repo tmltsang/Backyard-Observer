@@ -1,9 +1,9 @@
 ---
 record: True
 num_frames: 12
-video_path: training/videos/asuka/
-bar_model_path: runs/detect/bar_batch_updated_combo4/weights/best.pt
-asuka_model_path: 'runs/detect/asuka_with_no_mana2/weights/best.pt'
+video_path: [training/videos/asuka/]
+bar_model_path: models/vision/bars/best.pt
+asuka_model_path: models/vision/asuka/best.pt
 csv_path: csv/asuka
 csv_fields:  ['time',
               'p1_name', 'p2_name',
@@ -18,7 +18,7 @@ csv_fields:  ['time',
               'p1_reversal', 'p2_reversal',
               'p1_curr_damaged', 'p2_curr_damaged',
               'p1_round_win', 'p1_set_win']
-asuka_csv_fields: ['opponent', 'asuka_spell_1', 'asuka_spell_2', 'asuka_spell_3', 'asuka_spell_4', 'asuka_win']
+asuka_csv_fields: ['opponent', 'time', 'player_side', 'asuka_spell_1', 'asuka_spell_2', 'asuka_spell_3', 'asuka_spell_4', 'asuka_win']
 round_win_field: "p1_round_win"
 set_win_field: "p1_set_win"
 asuka_win_field: "asuka_win"
