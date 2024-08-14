@@ -1,0 +1,29 @@
+---
+record: True
+num_frames: 3
+video_path: [videos/evo/asuka_ramlethal_1_zando_redditto_lsf1.mp4,
+             videos/evo/anji_asuka_1_ooeygooeychewysnicker_zando_lqf2.mp4]
+bar_model_path: models/vision/bars/best.pt
+asuka_model_path: models/vision/asuka/best.pt
+csv_path: videos/evo/asuka
+csv_fields:  ['time',
+              'p1_name', 'p2_name',
+              'p1_health', 'p2_health',
+              'p1_tension', 'p2_tension',
+              'p1_burst', 'p2_burst',
+              'p1_risc', 'p2_risc',
+              'p1_round_count', 'p2_round_count',
+              'p1_counter', 'p2_counter',
+              'p1_just', 'p2_just',
+              'p1_punish', 'p2_punish',
+              'p1_reversal', 'p2_reversal',
+              'p1_curr_damaged', 'p2_curr_damaged',
+              'p1_round_win', 'p1_set_win']
+asuka_csv_fields: ['opponent', 'time', 'player_side', 'asuka_spell_1', 'asuka_spell_2', 'asuka_spell_3', 'asuka_spell_4', 'asuka_win']
+round_win_field: "p1_round_win"
+set_win_field: "p1_set_win"
+asuka_win_field: "asuka_win"
+debug: False
+use_round_start_image: False
+tournament_mode: True
+tournament_csv_fields: ["tournament", "set_time", "tournament_round", "p1_player_name", "p2_player_name", "round_index", "set_index"]
