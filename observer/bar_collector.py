@@ -205,7 +205,9 @@ class BarCollector(Collector):
         resultsCpu = results[0].cpu()
         if Config.get("debug"):
             annotated_frame = results[0].plot(labels=True, conf=True)
-            cv2.imshow("Bars", annotated_frame)
+            cv2.imshow("Debug", annotated_frame)
+        elif not Config.get("record"):
+            cv2.imshow("Match", cv2.resize(frame, (1280, 720)))
         if self.bar_cls_dict == None:
             self.bar_cls_dict = results[0].names
 

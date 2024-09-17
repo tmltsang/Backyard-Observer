@@ -1,0 +1,6 @@
+path: .
+train: train_bar/images
+val: valid_bar/images
+
+nc: 21
+names: ["healthbar", "burst", "empty_risc", "empty_tension", "tension", "heart", "full_burst", "risc", "heart_lost", "punish", "counter", "slash", "reversal", "round_start", "tension_gears", "just", "perfect", health_lost, combo, slash_p2, slash_p1]

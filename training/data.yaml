@@ -1,0 +1,6 @@
+path: .
+train: train/images
+val: valid/images
+
+nc: 60
+names: ["testament_5P", "testament_5K", "testament_cS", "testament_fS", "testament_5H", "testament_5D", "testament_2P", "testament_2S", "testament_2H", "testament_2D", "testament_6P", "testament_6H", "testament_jP", "testament_jK", "testament_jS", "testament_jH", "testament_jD", "testament_throw", "testament_jThrow", "testament_crow", "stain_state", "stain_state_trigger", "testament_s_grave_reaper", "testament_h_grave_reaper", "testament_j_s_grave_reaper", "testament_j_h_grave_reaper", "grave_reaper_projectile", "testament_possession", "testament_arbiter_sign", "arbiter_sign_s_projectile", "testament_nostrovia", "testament_calamity_one", "testament_block", "testament_fd", "testament_ib", "testament_hit", "testament_idle", "testament_crouch", "testament_jump", "testament_walk", "testament_dash", "testament_back_dash", "testament_air_dash", "testament_wall_splat", "succubus", "blue_burst", "yellow_burst", "red_roman_cancel", "yellow_roman_cancel", "blue_roman_cancel", "purple_roman_cancel", "opponent_hit", "opponent_block", "opponent_wall_splat", "opponent", "testament_unholy_diver", "testament_2K", "arbiter_sign_h_projectile", "testament_air_back_dash", "succubus_nostrovia"]

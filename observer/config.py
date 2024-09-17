@@ -14,7 +14,7 @@ class Config:
     def load(cls, filename):
         if filename != "":
             if cls.conf == {}:
-                with open("ggstrive_analyser/conf/%s.yml" % filename, "r") as f:
+                with open("observer/conf/%s.yml" % filename, "r") as f:
                     cls.conf = yaml.load(f, Loader=yaml.FullLoader)
 
     @classmethod

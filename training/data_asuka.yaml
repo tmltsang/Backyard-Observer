@@ -1,0 +1,34 @@
+path: .
+train: train_asuka/images
+val: valid_asuka/images
+
+nc: 28
+names:
+- accipiter_metron
+- aquila_metron
+- bit_shift_metron
+- bookmark_auto_import
+- bookmark_full_import
+- bookmark_random_import
+- chaotic_option
+- delayed_howling_metron
+- delayed_tardus_metron
+- go_to_marker
+- gravity_rod_shooting
+- high_pass_gravity
+- howling_metron
+- howling_metron_ms_processing
+- low_pass_gravity
+- metron_arpeggio
+- metron_screamer_808
+- recover_mana_continuous
+- recover_mana_instant
+- reduce_mana
+- repulsive_rod_shooting
+- rms_boost_metron
+- sampler_404
+- shooting_time_stretch_accelerate
+- shooting_time_stretch_decelerate
+- terra_metron
+- used_spell
+- no_mana

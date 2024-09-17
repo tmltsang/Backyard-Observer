@@ -5,7 +5,7 @@ video_path: [videos/evo/giovanna_ramlethal_1_nitro_redditto_lf1.mp4,
              videos/evo/asuka_ramlethal_1_zando_redditto_lsf1.mp4,
              videos/evo/chaos_giovanna_1_jack_nitro_wsf1.mp4,]
 bar_model_path: models/vision/bars/best.pt
-csv_path: videos/evo/data/70
+csv_path: videos/evo/data/temp
 csv_fields:  ['time',
               'p1_name', 'p2_name',
               'p1_health', 'p2_health',
@@ -21,7 +21,7 @@ csv_fields:  ['time',
               'p1_round_win', 'p1_set_win']
 round_win_field: "p1_round_win"
 set_win_field: "p1_set_win"
-debug: False
+debug: True
 use_round_start_image: False
 tournament_mode: True
 tournament_csv_fields: ["tournament", "set_time", "tournament_round", "p1_player_name", "p2_player_name", "round_index", "set_index"]

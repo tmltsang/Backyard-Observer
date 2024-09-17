@@ -1,0 +1,7 @@
+models/vision/asuka/best.pt filter=lfs diff=lfs merge=lfs -text
+models/vision/bars/best.pt filter=lfs diff=lfs merge=lfs -text
+models/vision/predictions/* filter=lfs diff=lfs merge=lfs -text
+models/vision/predictions/pipeline_round_mlp.pkl filter=lfs diff=lfs merge=lfs -text
+models/vision/predictions/pipeline_spell_svc.pkl filter=lfs diff=lfs merge=lfs -text
+models/vision/predictions/set_pipeline_mlp.pkl filter=lfs diff=lfs merge=lfs -text
+img/docs/* filter=lfs diff=lfs merge=lfs -text

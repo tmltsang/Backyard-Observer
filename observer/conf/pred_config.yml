@@ -1,7 +1,7 @@
 ---
 record: False
 num_frames: 6
-video_path: [videos/arcsys_world_tour/sol_nagoriyuki_1_umisho_verix_wsf1.mp4]
+video_path: [videos/gg_matches]
 bar_model_path: models/vision/bars/best.pt
 pred_round_features: [
               'p1_health', 'p2_health',
@@ -14,5 +14,5 @@ pred_set_features: [
               'p1_burst', 'p2_burst',
               'p1_round_count', 'p2_round_count',]
 pred_set_win_field: "p1_set_win"
-round_model_path: notebooks/pipeline_round_mlp.pkl
-set_model_path: notebooks/set_pipeline_mlp.pkl
+round_model_path: models/vision/predictions/pipeline_round_mlp.pkl
+set_model_path: models/vision/predictions/set_pipeline_mlp.pkl
