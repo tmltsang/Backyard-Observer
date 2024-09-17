@@ -3,5 +3,13 @@ models/vision/bars/best.pt filter=lfs diff=lfs merge=lfs -text
 models/vision/predictions/pipeline_round_mlp.pkl filter=lfs diff=lfs merge=lfs -text
 models/vision/predictions/pipeline_spell_svc.pkl filter=lfs diff=lfs merge=lfs -text
 models/vision/predictions/set_pipeline_mlp.pkl filter=lfs diff=lfs merge=lfs -text
+img/docs/asuka_with_no_mana.jpg filter=lfs diff=lfs merge=lfs -text
+img/docs/asuka_with_used_spell.jpg filter=lfs diff=lfs merge=lfs -text
+img/docs/backyard-observer.gif filter=lfs diff=lfs merge=lfs -text
+img/docs/gg_strive.jpg filter=lfs diff=lfs merge=lfs -text
+img/docs/gg_strive_glossary_example.jpg filter=lfs diff=lfs merge=lfs -text
+img/docs/gg_strive_glossary_example_health.jpg filter=lfs diff=lfs merge=lfs -text
+img/docs/prediction.gif filter=lfs diff=lfs merge=lfs -text
+img/docs/sample_hand.jpg filter=lfs diff=lfs merge=lfs -text
 models/vision/predictions/* filter=lfs diff=lfs merge=lfs -text
 img/docs/* filter=lfs diff=lfs merge=lfs -text
