@@ -1,8 +1,10 @@
 # Backyard Observer
 ![demo](img/docs/backyard-observer.gif)
+
 *Metrics Gathering*
 
 ![pred_demo](img/docs/prediction.gif)
+
 *Real-time Predictions*
 
 A visual analyser for *Guilty Gear -Strive-*, vision model and metrics collector for [backyard-insight.info](https://backyard-insight.info/)
